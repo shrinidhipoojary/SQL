@@ -1,0 +1,15 @@
+schema SQL
+create table student(usn integer primary key,name varchar(10),phno integer,branch varchar(4));
+insert into student values(100,'shrinidhi',47657,'cs');
+insert into student values(200,'tejasvi',677698,'cs');                                                                                          
+insert into student values(300,'shraddha',12232,'cv');  
+insert into student values(400,'rachana',787989,'is');
+insert into student values(500,'tejasvi',9786787,'is');  
+
+Query SQL
+select * from student where branch ='cs'
+
+output
+usn       name 	        phno 	       branch
+100 	  shrinidhi 	47657 	       cs
+200 	  tejasvi 	677698 	       cs      
