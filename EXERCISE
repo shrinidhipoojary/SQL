@@ -1,0 +1,27 @@
+**Schema (MySQL v5.7)**
+
+    create table STUDENT(ssn integer,name varchar(10),major varchar(10),Bdate date,primary key(ssn));
+    create table COURSE(course_id integer,cname varchar(20),Dept varchar(20),primary key(course_id));
+    create table TEXT_BOOK(book_ISBN integer,book_title varchar(20),publisher varchar(20),author varchar(20),primary key(book_ISBN));
+    create table BOOK_ADOPTION(course_id integer, quarter integer, book_ISBN integer,primary key(quarter),foreign key(course_id) references COURSE(course_id),foreign key(book_ISBN) references TEXT_BOOK(book_ISBN));
+    create table ENROLL(ssn integer,course_id integer,quarter integer,grade varchar(5),primary key(ssn,course_id,quarter),foreign key(ssn) references STUDENT(ssn),foreign key(course_id) references COURSE(course_id),foreign key(quarter) references BOOK_ADOPTION(quarter));            
+    insert into STUDENT values(10,'XXX','CS','2001-01-13');
+    insert into STUDENT values(20,'YYY','IS','2000-11-25');
+    insert into STUDENT values(30,'ZZZ','CV','2001-03-27');
+    insert into COURSE values(100,'DBMS','CS');
+    insert into COURSE values(200,'CNS','CV');
+    insert into COURSE values(300,'ME','IS');
+    insert into TEXT_BOOK values(123,'WWW','Mcgraw','zzz');
+    insert into TEXT_BOOK values(124,'MMM','Person','XYZ');
+    insert into TEXT_BOOK values(125,'MP','IEEE','AAA');
+    insert into BOOK_ADOPTION values(200,3,123);
+    insert into BOOK_ADOPTION values(100,2,125);
+    insert into BOOK_ADOPTION values(300,1,124);
+    insert into ENROLL values(10,200,3,'A');
+    insert into ENROLL values(20,100,1,'B');
+    insert into ENROLL values(30,300,2,'A');
+
+---
+
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/xwATSCbrVk5JoNHLt3PqrD/1)
