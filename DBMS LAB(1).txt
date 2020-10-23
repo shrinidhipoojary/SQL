@@ -1,0 +1,96 @@
+**Schema (MySQL v5.7)**
+
+    create table PUBLISHER(Name varchar(20) primary key,Address varchar(20),Phone varchar(20));
+    create table BOOK(Book_id integer primary key,Title varchar(20),Publisher_Name varchar(20),Pub_year integer ,foreign key(Publisher_Name) references PUBLISHER(Name) on delete cascade);
+    create table BOOK_AUTHORS(Book_id integer primary key,Author_name varchar(10),foreign key(Book_id) references BOOK(Book_id) on delete cascade);
+    create table LIBRARY_BRANCH(Branch_id integer primary key,Branch_Name varchar(30),Address varchar(10));
+    create table BOOK_COPIES(Book_id integer,Branch_id integer,No_of_Copies integer,primary key(Book_id,Branch_id),foreign key(Book_id) references BOOK(Book_id) on delete cascade,foreign key(Branch_id) references LIBRARY_BRANCH(Branch_id)on delete cascade);
+    create table BOOK_LENDING(Book_id integer,Branch_id integer,Card_No integer,Date_Out date,Due_Date date,primary key(Book_id,Branch_id,Card_No),foreign key(Book_id) references BOOK(Book_id) on delete cascade,foreign key(Branch_id) references LIBRARY_BRANCH(Branch_id)on delete cascade);
+    insert into PUBLISHER values('Mcgraw','Bangalore','9696500001');   
+    insert into PUBLISHER values('Person','Bangalore','9595950000'); 
+    insert into PUBLISHER values('SAM Pub','Mangalore','9494940000'); 
+    insert into PUBLISHER values('IOP','Mumbai','9797970000'); 
+    insert into PUBLISHER values('IEEE','Delhi','9090900000'); 
+    insert into BOOK values(10,'DBMS','Mcgraw',2010);
+    insert into BOOK values(20,'SE','Person',2008);
+    insert into BOOK values(30,'FLAT','SAM Pub',2019);
+    insert into BOOK values(40,'BDA','IOP',2018);
+    insert into BOOK values(50,'MP','IEEE',2020);
+    insert into BOOK_AUTHORS values(10,'Andrew');
+    insert into BOOK_AUTHORS values(20,'Raj Kumar');
+    insert into BOOK_AUTHORS values(30,'Samual');
+    insert into BOOK_AUTHORS values(40,'Padma');
+    insert into BOOK_AUTHORS values(50,'Guru');
+    insert into LIBRARY_BRANCH values(100,'Main Building','Mangalore');
+    insert into LIBRARY_BRANCH values(200,'Ground Floor','Bangalore');
+    insert into LIBRARY_BRANCH values(300,'1st Floor','Bangalore');
+    insert into LIBRARY_BRANCH values(400,'Research Building','Udupi');
+    insert into LIBRARY_BRANCH values(500,'OPD Building','Manipal');
+    insert into BOOK_COPIES values(10,100,20);
+    insert into BOOK_COPIES values(30,100,30);
+    insert into BOOK_COPIES values(10,200,5);
+    insert into BOOK_COPIES values(20,300,15);
+    insert into BOOK_COPIES values(40,500,7);
+    insert into BOOK_LENDING values(10,100,201,'2017-06-15','2017-06-25');
+    insert into BOOK_LENDING values(20,200,202,'2017-05-10','2017-05-20');
+    insert into BOOK_LENDING values(30,300,203,'2017-07-25','2017-08-05');
+    insert into BOOK_LENDING values(40,400,204,'2017-08-14','2017-08-24');
+    insert into BOOK_LENDING values(50,500,205,'2017-09-01','2017-09-10');
+    insert into BOOK_LENDING values(10,100,202,'2017-05-11','2017-05-21');
+    insert into BOOK_LENDING values(30,300,202,'2017-05-13','2017-05-22');
+    insert into BOOK_LENDING values(50,500,202,'2017-04-10','2017-04-20');                                                                                                  
+
+---
+
+**Query #1**
+
+    select B.Book_id,Title,Publisher_Name,Branch_id,No_of_Copies 
+    from BOOK B,BOOK_AUTHORS BA,BOOK_COPIES BC 
+    where B.Book_id=BA.Book_id and BC.Book_id=B.Book_id;
+
+| Book_id | Title | Publisher_Name | Branch_id | No_of_Copies |
+| ------- | ----- | -------------- | --------- | ------------ |
+| 10      | DBMS  | Mcgraw         | 100       | 20           |
+| 10      | DBMS  | Mcgraw         | 200       | 5            |
+| 20      | SE    | Person         | 300       | 15           |
+| 30      | FLAT  | SAM Pub        | 100       | 30           |
+| 40      | BDA   | IOP            | 500       | 7            |
+
+---
+**Query #2**
+
+    select Card_No
+    from BOOK_LENDING
+    where Date_Out between '2017-01-01' and '2017-06-01'
+    group by Card_No
+    having count(Card_No)>3;
+
+| Card_No |
+| ------- |
+| 202     |
+
+---
+**Query #3**
+
+    delete 
+    from BOOK 
+    where Book_id=20;
+
+There are no results to be displayed.
+
+---
+**Query #4**
+
+    select * 
+    from BOOK;
+
+| Book_id | Title | Publisher_Name | Pub_year |
+| ------- | ----- | -------------- | -------- |
+| 10      | DBMS  | Mcgraw         | 2010     |
+| 30      | FLAT  | SAM Pub        | 2019     |
+| 40      | BDA   | IOP            | 2018     |
+| 50      | MP    | IEEE           | 2020     |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/)
