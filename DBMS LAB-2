@@ -1,10 +1,64 @@
 **Schema (MySQL v5.7)**
 
     create table SALESMAN(Salesman_id integer primary key,Name varchar(10),City varchar(10),Commission integer);
-    create table CUSTOMER(Customer_id integer primary key,Customer_Name varchar(10),City varchar(10),Grade varchar(5),Salesman_id integer, foreign key(Salesman_id) references SALESMAN(Salesman_id)on delete cascade);
+    create table CUSTOMER(Customer_id integer primary key,Customer_Name varchar(10),City varchar(10),Grade integer,Salesman_id integer, foreign key(Salesman_id) references SALESMAN(Salesman_id)on delete cascade);
     create table ORDERS(Ord_No integer primary key,Purchase_Amt integer,Ord_Date date,Customer_id integer,Salesman_id integer,foreign key(Customer_id) references CUSTOMER(Customer_id)on delete cascade,foreign key(Salesman_id) references SALESMAN(Salesman_id)on delete cascade);
+    insert into SALESMAN values(10,'Akash','Mangalore',2);
+    insert into SALESMAN values(20,'Ram','Bangalore',10);
+    insert into SALESMAN values(30,'Raj','Mangalore',5);
+    insert into SALESMAN values(40,'Kiran','Mysore',15);
+    insert into CUSTOMER values(1000,'Avinash','Mangalore',100,10);
+    insert into CUSTOMER values(2000,'Kumar','Bangalore',200,20);
+    insert into CUSTOMER values(3000,'Preethi','Mysore',300,40);
+    insert into CUSTOMER values(4000,'Smitha','Mangalore',400,30);
+    insert into ORDERS values(551,5000,'2020-01-4',1000,10);
+    insert into ORDERS values(552,2500,'2020-02-5',2000,20);
+    insert into ORDERS values(553,500,'2020-03-3',3000,40);
+    insert into ORDERS values(554,1500,'2020-04-2',4000,30);
+    insert into ORDERS values(555,2000,'2020-06-3',2000,10);
 
 ---
 
+**Query #1**
+
+    select Salesman_id,name 
+    from SALESMAN S
+    where 1<(select count(*) from ORDERS where S.Salesman_id=Salesman_id);
+
+| Salesman_id | name  |
+| ----------- | ----- |
+| 10          | Akash |
+
+---
+**Query #2**
+
+    delete from SALESMAN
+    where Salesman_id=10;
+
+There are no results to be displayed.
+
+---
+**Query #3**
+
+    select * from SALESMAN;
+
+| Salesman_id | Name  | City      | Commission |
+| ----------- | ----- | --------- | ---------- |
+| 20          | Ram   | Bangalore | 10         |
+| 30          | Raj   | Mangalore | 5          |
+| 40          | Kiran | Mysore    | 15         |
+
+---
+**Query #4**
+
+    select * from ORDERS;
+
+| Ord_No | Purchase_Amt | Ord_Date   | Customer_id | Salesman_id |
+| ------ | ------------ | ---------- | ----------- | ----------- |
+| 552    | 2500         | 2020-02-05 | 2000        | 20          |
+| 553    | 500          | 2020-03-03 | 3000        | 40          |
+| 554    | 1500         | 2020-04-02 | 4000        | 30          |
+
+---
 
 [View on DB Fiddle](https://www.db-fiddle.com/)
