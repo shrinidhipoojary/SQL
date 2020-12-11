@@ -61,4 +61,39 @@ There are no results to be displayed.
 
 ---
 
+**Query #5**
+
+    select Ord_Date ,Max(Purchase_Amt) from ORDERS group by Ord_Date;
+
+| Ord_Date   | Max(Purchase_Amt) |
+| ---------- | ----------------- |
+| 2020-01-04 | 5000              |
+| 2020-02-05 | 2500              |
+| 2020-03-03 | 500               |
+| 2020-04-02 | 1500              |
+| 2020-06-03 | 2000              |
+
+---
+**Query #6**
+
+    create  view best_salesman as select Salesman_id from ORDERS where Purchase_Amt in (select Max(Purchase_Amt) from ORDERS group by Ord_Date);
+
+There are no results to be displayed.
+
+---
+**Query #7**
+
+    select * from best_salesman;
+
+| Salesman_id |
+| ----------- |
+| 10          |
+| 20          |
+| 40          |
+| 30          |
+| 10          |
+
+---
+
+
 [View on DB Fiddle](https://www.db-fiddle.com/)
