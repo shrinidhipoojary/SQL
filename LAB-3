@@ -1,30 +1,121 @@
-create table ACTOR(Act_id integer primary key,Act_Name varchar(20),Act_Gender varchar(1));
-create table DIRECTOR(Dir_id integer primary key,Dir_Name varchar(20),Dir_Phone varchar(10));
-create table MOVIES(Mov_id integer primary key,Mov_Title varchar(20),Mov_Year integer,Mov_Lang varchar(10),Dir_id integer,foreign key(Dir_id)references DIRECTOR(Dir_id)on delete cascade);
-create table MOVIE_CAST(Act_id integer,Mov_id integer,Role varchar(10),primary key(Act_id,Mov_id),foreign key(Act_id)references ACTOR(Act_id)on delete cascade,foreign key(Mov_id)references MOVIES(Mov_id)on delete cascade);
-create table RATING(Mov_id integer primary key,Rev_Stars integer,foreign key(Mov_id)references MOVIES(Mov_id)on delete cascade);
-insert into ACTOR values(100,'Rachitha','F');
-insert into ACTOR values(101,'Anupama','F');
-insert into ACTOR values(102,'Tom Cruse','M');
-insert into ACTOR values(103,'Harshavardhan','M');                                                                                        
-insert into ACTOR values(104,'Puneeth','M');
-insert into DIRECTOR values(200,'Rajamouli','9739770677');
-insert into DIRECTOR values(201,'Swapna Krishna','1234567899');
-insert into DIRECTOR values(202,'Hitchcock','7706770577');
-insert into DIRECTOR values(203,'Shiva','9876543211');
-insert into DIRECTOR values(204,'Stevan Spielberg','9009009009');
-insert into MOVIES values(1000,'Diya',2020,'kannada',102);
-insert into MOVIES values(1001,'Joker',2018,'English',103);
-insert into MOVIES values(1002,'Girgit',2001,'Tulu',101);
-insert into MOVIES values(1003,'Mirzapur-1',2018,'Hindi',104);
-insert into MOVIES values(1004,'Mirzapur-2',2018,'Hindi',104);
-insert into MOVIE_CAST values(100,1000,'Heroine');
-insert into MOVIE_CAST values(101,1001,'Heroine');
-insert into MOVIE_CAST values(102,1004,'Guest');
-insert into MOVIE_CAST values(100,1003,'Hero');
-insert into MOVIE_CAST values(104,1002,'Villian');
-insert into RATING values(1000,6);
-insert into RATING values(1001,8);
-insert into RATING values(1002,7);
-insert into RATING values(1003,9);
-insert into RATING values(1004,9);
+**Schema (MySQL v5.7)**
+
+    create table ACTOR(Act_id integer primary key,Act_Name varchar(20),Act_Gender varchar(1));
+    create table DIRECTOR(Dir_id integer primary key,Dir_Name varchar(20),Dir_Phone varchar(10));
+    create table MOVIES(Mov_id integer primary key,Mov_Title varchar(20),Mov_Year integer,Mov_Lang varchar(10),Dir_id integer,foreign key(Dir_id)references DIRECTOR(Dir_id)on delete cascade);
+    create table MOVIE_CAST(Act_id integer,Mov_id integer,Role varchar(10),primary key(Act_id,Mov_id),foreign key(Act_id)references ACTOR(Act_id)on delete cascade,foreign key(Mov_id)references MOVIES(Mov_id)on delete cascade);
+    create table RATING(Mov_id integer primary key,Rev_Stars integer,foreign key(Mov_id)references MOVIES(Mov_id)on delete cascade);
+    insert into ACTOR values(100,'Rachitha','F');
+    insert into ACTOR values(101,'Anupama','F');
+    insert into ACTOR values(102,'Tom Cruse','M');
+    insert into ACTOR values(103,'Harshavardhan','M');                                                                                        
+    insert into ACTOR values(104,'Puneeth','M');
+    insert into DIRECTOR values(200,'Rajamouli','9739770677');
+    insert into DIRECTOR values(201,'Swapna Krishna','1234567899');
+    insert into DIRECTOR values(202,'Hitchcock','7706770577');
+    insert into DIRECTOR values(203,'Shiva','9876543211');
+    insert into DIRECTOR values(204,'Stevan Spielberg','9009009009');
+    insert into MOVIES values(1000,'Diya',2020,'kannada',202);
+    insert into MOVIES values(1001,'Joker',2018,'English',203);
+    insert into MOVIES values(1002,'Girgit',2001,'Tulu',201);
+    insert into MOVIES values(1003,'Mirzapur-1',2018,'Hindi',204);
+    insert into MOVIES values(1004,'Mirzapur-2',2018,'Hindi',204);
+    insert into MOVIE_CAST values(100,1000,'Heroine');
+    insert into MOVIE_CAST values(101,1001,'Heroine');
+    insert into MOVIE_CAST values(101,1000,'Guest');
+    insert into MOVIE_CAST values(100,1003,'Hero');
+    insert into MOVIE_CAST values(104,1002,'Villian');
+    insert into RATING values(1000,6);
+    insert into RATING values(1001,8);
+    insert into RATING values(1002,7);
+    insert into RATING values(1003,9);
+    insert into RATING values(1004,9);
+
+---
+
+**Query #1**
+
+    select Mov_Title from MOVIES M where Dir_id in(select D.Dir_id from DIRECTOR D where D.Dir_id=M.Dir_id and D.Dir_Name="Hitchcock");
+
+| Mov_Title |
+| --------- |
+| Diya      |
+
+---
+**Query #2**
+
+    select Mov_Title from MOVIES M,MOVIE_CAST MC where M.Mov_id=MC.Mov_id and Act_id in(select Act_id from MOVIE_CAST group by Act_id having count(*)>1)group by Mov_Title having count(*)>1;
+
+| Mov_Title |
+| --------- |
+| Diya      |
+
+---
+**Query #3**
+
+    select Act_id from MOVIES M join MOVIE_CAST MC on M.Mov_id=MC.Mov_id where Mov_Year<2000 union select Act_id from MOVIES M join MOVIE_CAST MC on M.Mov_id=MC.Mov_id where Mov_Year>2015;
+
+| Act_id |
+| ------ |
+| 100    |
+| 101    |
+
+---
+**Query #4**
+
+    select Mov_Title,Rev_Stars from MOVIES M,RATING R where M.Mov_id=R.Mov_id and Rev_Stars>=1;
+
+| Mov_Title  | Rev_Stars |
+| ---------- | --------- |
+| Diya       | 6         |
+| Joker      | 8         |
+| Girgit     | 7         |
+| Mirzapur-1 | 9         |
+| Mirzapur-2 | 9         |
+
+---
+**Query #5**
+
+    select Mov_Title,Rev_Stars from MOVIES M,RATING R where M.Mov_id=R.Mov_id and Rev_Stars>=1 and Rev_Stars in(select max(Rev_Stars)from RATING) order by Mov_Title;
+
+| Mov_Title  | Rev_Stars |
+| ---------- | --------- |
+| Mirzapur-1 | 9         |
+| Mirzapur-2 | 9         |
+
+---
+**Query #6**
+
+    select * from RATING;
+
+| Mov_id | Rev_Stars |
+| ------ | --------- |
+| 1000   | 6         |
+| 1001   | 8         |
+| 1002   | 7         |
+| 1003   | 9         |
+| 1004   | 9         |
+
+---
+**Query #7**
+
+    update RATING set Rev_Stars=5 where Mov_id in(select Mov_id from MOVIES M,DIRECTOR D where M.Dir_id=D.Dir_id and Dir_Name="Stevan Spielberg");
+
+There are no results to be displayed.
+
+---
+**Query #8**
+
+    select * from RATING;
+
+| Mov_id | Rev_Stars |
+| ------ | --------- |
+| 1000   | 6         |
+| 1001   | 8         |
+| 1002   | 7         |
+| 1003   | 5         |
+| 1004   | 5         |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/pwMVmjHn6RGdE8X3YG3vxp/2)
