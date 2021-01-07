@@ -1,35 +1,209 @@
-create table STUDENT(USN varchar(20) primary key,SName varchar(20),Address varchar(20),Phone long,Gender varchar(10));
-create table SEMSEC(SSID integer primary key,Sem integer,Sec varchar(5));
-create table CLASS(USN varchar(20) primary key,SSID integer,foreign key(USN) references STUDENT(USN)on delete cascade,foreign key(SSID) references SEMSEC(SSID)on delete cascade);
-create table COURSE(Subcode varchar(20) primary key,Title varchar(20),Sem integer,Credits integer);
-create table IAMARKS(USN varchar(20),Subcode varchar(20),SSID integer,Test1 integer,Test2 integer,Test3 integer,FinalIA integer,primary key(USN,Subcode,SSID),foreign key(USN) references STUDENT(USN)on delete cascade,foreign key(Subcode) references COURSE(Subcode)on delete cascade,foreign key(SSID) references SEMSEC(SSID)on delete cascade);
-insert into STUDENT values('cs081','shrinidh','manglore',9874569888,'female');
-insert into STUDENT values('cs082','shraddha','banglore',1212212100,'female');
-insert into STUDENT values('cs083','tejasvi','mysore',3030202010,'female');
-insert into STUDENT values('cs084','karthik','manglore',123456789,'male');
-insert into STUDENT values('cs085','kiran','banglore',8989898989,'male');
-insert into SEMSEC values(111,5,'cs1');
-insert into SEMSEC values(112,5,'cs2');
-insert into SEMSEC values(113,5,'cs1');
-insert into SEMSEC values(114,5,'cs1');
-insert into SEMSEC values(115,5,'cs2');
-insert into CLASS values('cs081',113);
-insert into CLASS values('cs082',115);
-insert into CLASS values('cs083',111);
-insert into CLASS values('cs084',112);
-insert into CLASS values('cs085',114);
-insert into COURSE values('18cs51','atc',5,3);
-insert into COURSE values('18cs52','dbms',5,4);
-insert into COURSE values('18cs53','up',5,2);
-insert into COURSE values('18cs54','me',5,3);
-insert into COURSE values('18cs55','cns',5,4);
-insert into IAMARKS values('cs081','18cs51',113,50,46,47,48);
-insert into IAMARKS values('cs081','18cs52',113,40,40,47,42);
-insert into IAMARKS values('cs081','18cs53',113,50,40,45,45);
-insert into IAMARKS values('cs081','18cs54',113,40,46,41,42);
-insert into IAMARKS values('cs081','18cs55',113,50,46,40,45);
-insert into IAMARKS values('cs083','18cs51',111,45,42,44,44);
-insert into IAMARKS values('cs083','18cs52',111,41,47,30,44);
-insert into IAMARKS values('cs083','18cs53',111,38,42,41,45);
-insert into IAMARKS values('cs083','18cs54',111,35,45,40,40);
-insert into IAMARKS values('cs083','18cs55',111,39,46,40,42);
+**Schema (MySQL v5.7)**
+
+    create table STUDENT(USN varchar(20) primary key,SName varchar(20),Address varchar(20),Phone long,Gender varchar(10));
+    create table SEMSEC(SSID integer primary key,Sem integer,Sec varchar(5));
+    create table CLASS(USN varchar(20) primary key,SSID integer,foreign key(USN) references STUDENT(USN)on delete cascade,foreign key(SSID) references SEMSEC(SSID)on delete cascade);
+    create table COURSE(Subcode varchar(20) primary key,Title varchar(20),Sem integer,Credits integer);
+    create table IAMARKS(USN varchar(20),Subcode varchar(20),SSID integer,Test1 integer,Test2 integer,Test3 integer,FinalIA integer,primary key(USN,Subcode,SSID),foreign key(USN) references STUDENT(USN)on delete cascade,foreign key(Subcode) references COURSE(Subcode)on delete cascade,foreign key(SSID) references SEMSEC(SSID)on delete cascade);
+    insert into STUDENT values('cs081','shrinidh','mangalore',9874569888,'female');
+    insert into STUDENT values('cs082','shraddha','bangalore',1212212100,'female');
+    insert into STUDENT values('cs083','tejasvi','mysore',3030202010,'female');
+    insert into STUDENT values('cs084','karthik','mangalore',123456789,'male');
+    insert into STUDENT values('cs085','kiran','bangalore',8989898989,'male');
+    insert into SEMSEC values(111,8,'c');
+    insert into SEMSEC values(112,4,'d');
+    insert into SEMSEC values(113,3,'c');
+    insert into SEMSEC values(114,8,'b');
+    insert into SEMSEC values(115,4,'c');
+    insert into CLASS values('cs081',113);
+    insert into CLASS values('cs082',115);
+    insert into CLASS values('cs083',111);
+    insert into CLASS values('cs084',112);
+    insert into CLASS values('cs085',114);
+    insert into COURSE values('18cs51','atc',5,3);
+    insert into COURSE values('18cs52','dbms',5,5);
+    insert into COURSE values('18cs53','up',5,2);
+    insert into COURSE values('18cs54','me',5,3);
+    insert into COURSE values('18cs55','cns',5,4);
+    insert into IAMARKS values('cs081','18cs51',113,15,17,18,18);
+    insert into IAMARKS values('cs081','18cs52',113,10,13,8,12);
+    insert into IAMARKS values('cs081','18cs53',113,15,10,10,13);
+    insert into IAMARKS values('cs081','18cs54',113,9,11,14,null);
+    insert into IAMARKS values('cs081','18cs55',113,9,13,16,15);
+    insert into IAMARKS values('cs083','18cs51',111,14,15,16,null);
+    insert into IAMARKS values('cs083','18cs52',111,20,16,12,18);
+    insert into IAMARKS values('cs083','18cs53',111,18,12,11,15);
+    insert into IAMARKS values('cs083','18cs54',111,15,15,10,15);
+    insert into IAMARKS values('cs083','18cs55',111,19,16,10,null);
+
+---
+
+**Query #1**
+
+    select * 
+    from STUDENT S,SEMSEC SS,CLASS C
+    where S.USN=C.USN and C.SSID=SS.SSID and Sem=4 and Sec='c';
+
+| USN   | SName    | Address   | Phone      | Gender | SSID | Sem | Sec | USN   | SSID |
+| ----- | -------- | --------- | ---------- | ------ | ---- | --- | --- | ----- | ---- |
+| cs082 | shraddha | bangalore | 1212212100 | female | 115  | 4   | c   | cs082 | 115  |
+
+---
+**Query #2**
+
+    select Sem,Sec,Gender,count(*)
+    from STUDENT S,SEMSEC SS,CLASS C
+    where S.USN=C.USN and C.SSID=SS.SSID
+    group by Sem,Sec,Gender
+    order by Sem;
+
+| Sem | Sec | Gender | count(*) |
+| --- | --- | ------ | -------- |
+| 3   | c   | female | 1        |
+| 4   | c   | female | 1        |
+| 4   | d   | male   | 1        |
+| 8   | b   | male   | 1        |
+| 8   | c   | female | 1        |
+
+---
+**Query #3**
+
+    create view Test1 as 
+    select  Subcode,Test1
+    from IAMARKS
+    where USN='cs081';
+
+There are no results to be displayed.
+
+---
+**Query #4**
+
+    select * from Test1;
+
+| Subcode | Test1 |
+| ------- | ----- |
+| 18cs51  | 15    |
+| 18cs52  | 10    |
+| 18cs53  | 15    |
+| 18cs54  | 9     |
+| 18cs55  | 9     |
+
+---
+**Query #5**
+
+    update IAMARKS 
+    set FinalIA=((Test1+Test2+Test3)-least(Test1,Test2,Test3))/2;
+
+There are no results to be displayed.
+
+---
+**Query #6**
+
+    select * from IAMARKS;
+
+| USN   | Subcode | SSID | Test1 | Test2 | Test3 | FinalIA |
+| ----- | ------- | ---- | ----- | ----- | ----- | ------- |
+| cs081 | 18cs51  | 113  | 15    | 17    | 18    | 18      |
+| cs081 | 18cs52  | 113  | 10    | 13    | 8     | 12      |
+| cs081 | 18cs53  | 113  | 15    | 10    | 10    | 13      |
+| cs081 | 18cs54  | 113  | 9     | 11    | 14    | 13      |
+| cs081 | 18cs55  | 113  | 9     | 13    | 16    | 15      |
+| cs083 | 18cs51  | 111  | 14    | 15    | 16    | 16      |
+| cs083 | 18cs52  | 111  | 20    | 16    | 12    | 18      |
+| cs083 | 18cs53  | 111  | 18    | 12    | 11    | 15      |
+| cs083 | 18cs54  | 111  | 15    | 15    | 10    | 15      |
+| cs083 | 18cs55  | 111  | 19    | 16    | 10    | 18      |
+
+---
+**Query #7**
+
+    select S.USN,S.SName,FinalIA,
+    (CASE 
+       WHEN FinalIA>=17 and FinalIA<=20 then 'OUTSTANDING'
+       WHEN FinalIA>=12 and FinalIA<=17 then 'AVERAGE'
+       WHEN FinalIA>=12 then 'WEAK'
+     END) as CAT
+     from STUDENT S, IAMARKS IA, CLASS C, SEMSEC SS
+     WHERE S.USN=IA.USN AND S.USN=C.USN AND C.SSID=SS.SSID AND Sem=8 and(Sec='a' or Sec='b' or Sec='c');
+
+| USN   | SName   | FinalIA | CAT         |
+| ----- | ------- | ------- | ----------- |
+| cs083 | tejasvi | 16      | AVERAGE     |
+| cs083 | tejasvi | 18      | OUTSTANDING |
+| cs083 | tejasvi | 15      | AVERAGE     |
+| cs083 | tejasvi | 15      | AVERAGE     |
+| cs083 | tejasvi | 18      | OUTSTANDING |
+
+---
+**Query #8**
+
+    select * from STUDENT;
+
+| USN   | SName    | Address   | Phone      | Gender |
+| ----- | -------- | --------- | ---------- | ------ |
+| cs081 | shrinidh | mangalore | 9874569888 | female |
+| cs082 | shraddha | bangalore | 1212212100 | female |
+| cs083 | tejasvi  | mysore    | 3030202010 | female |
+| cs084 | karthik  | mangalore | 123456789  | male   |
+| cs085 | kiran    | bangalore | 8989898989 | male   |
+
+---
+**Query #9**
+
+    select * from SEMSEC;
+
+| SSID | Sem | Sec |
+| ---- | --- | --- |
+| 111  | 8   | c   |
+| 112  | 4   | d   |
+| 113  | 3   | c   |
+| 114  | 8   | b   |
+| 115  | 4   | c   |
+
+---
+**Query #10**
+
+    select * from CLASS;
+
+| USN   | SSID |
+| ----- | ---- |
+| cs083 | 111  |
+| cs084 | 112  |
+| cs081 | 113  |
+| cs085 | 114  |
+| cs082 | 115  |
+
+---
+**Query #11**
+
+    select * from COURSE;
+
+| Subcode | Title | Sem | Credits |
+| ------- | ----- | --- | ------- |
+| 18cs51  | atc   | 5   | 3       |
+| 18cs52  | dbms  | 5   | 5       |
+| 18cs53  | up    | 5   | 2       |
+| 18cs54  | me    | 5   | 3       |
+| 18cs55  | cns   | 5   | 4       |
+
+---
+**Query #12**
+
+    select * from IAMARKS;
+
+| USN   | Subcode | SSID | Test1 | Test2 | Test3 | FinalIA |
+| ----- | ------- | ---- | ----- | ----- | ----- | ------- |
+| cs081 | 18cs51  | 113  | 15    | 17    | 18    | 18      |
+| cs081 | 18cs52  | 113  | 10    | 13    | 8     | 12      |
+| cs081 | 18cs53  | 113  | 15    | 10    | 10    | 13      |
+| cs081 | 18cs54  | 113  | 9     | 11    | 14    | 13      |
+| cs081 | 18cs55  | 113  | 9     | 13    | 16    | 15      |
+| cs083 | 18cs51  | 111  | 14    | 15    | 16    | 16      |
+| cs083 | 18cs52  | 111  | 20    | 16    | 12    | 18      |
+| cs083 | 18cs53  | 111  | 18    | 12    | 11    | 15      |
+| cs083 | 18cs54  | 111  | 15    | 15    | 10    | 15      |
+| cs083 | 18cs55  | 111  | 19    | 16    | 10    | 18      |
+
+---
+
+[View on DB Fiddle](https://www.db-fiddle.com/f/qSxFPSBbXm4ecoQDWXYUn6/6)
